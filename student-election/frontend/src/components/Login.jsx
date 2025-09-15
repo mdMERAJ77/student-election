@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { FaEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -55,15 +56,22 @@ const Login = () => {
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label className="block text-gray-700">Password</label>
             <input
-              type="password"
+              type={showPassword?"text":"password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded"
               required
             />
+            <button
+            type="button"
+              className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+              onClick={() => setShowPassword((prev)=>!prev)}
+            >
+              {!showPassword ? <FaEye size={20}/> : <FaRegEyeSlash size={20}/>}
+            </button>
           </div>
           <button
             type="submit"

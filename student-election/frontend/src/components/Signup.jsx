@@ -1,44 +1,52 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
-    // Client-side email validation
-    const emailRegex = /^[a-zA-Z0-9_]+@jietjodhpur\.ac\.in$/;
+    // ✅ Updated regex: allow dots before @
+    const emailRegex = /^[a-zA-Z0-9._]+@jietjodhpur\.ac\.in$/;
     if (!emailRegex.test(email)) {
-      setError('Please use a valid JIET college email in the format name@jietjodhpur.ac.in (e.g., meraj@jietjodhpur.ac.in).');
+      setError(
+        "Please use a valid JIET college email in the format name@jietjodhpur.ac.in (e.g., meraj@jietjodhpur.ac.in)."
+      );
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signup', {
-        email,
-        password,
-      }, {
-        headers: { 'x-auth-token': '' } // Match backend expectation
-      });
-      localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        { email, password }
+      );
+      localStorage.setItem("token", response.data.token);
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.msg || 'Signup failed.');
+      setError(err.response?.data?.msg || "Signup failed.");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/images/background.png')" }}>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/background.png')" }}
+    >
       <div className="bg-white bg-opacity-80 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6">Signup</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
         <form onSubmit={handleSubmit}>
+          {/* Email */}
           <div className="mb-4">
             <label className="block text-gray-700">Email</label>
             <input
@@ -50,22 +58,40 @@ const Signup = () => {
               required
             />
           </div>
-          <div className="mb-4">
+
+          {/* Password */}
+          <div className="mb-4 relative">
             <label className="block text-gray-700">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded"
               required
             />
+            <button
+              type="button"  // ✅ prevents accidental form submit
+              className="absolute right-3 top-9 text-gray-500 cursor-pointer"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {!showPassword ? <FaEye size={20}/> : <FaRegEyeSlash size={20}/>}
+            </button>
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          >
             Signup
           </button>
         </form>
+
         <p className="text-center mt-4">
-          Already have an account? <a href="/login" className="text-blue-500">Login</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-blue-500">
+            Login
+          </a>
         </p>
       </div>
     </div>
